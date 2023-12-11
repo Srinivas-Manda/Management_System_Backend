@@ -1,0 +1,57 @@
+---
+- name: Setup mysql
+  become: yes
+  hosts: all
+  tasks:
+    - name: Installing mysql and dependencies
+      package:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+        - mysql-server
+        - mysql-client
+        - python3-mysqldb
+        - libmysqlclient-dev
+      become: yes
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+    - name: creating mysql user
+      mysql_user:
+        name: root
+        password: password
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+    - name: creating database
+      mysql_db:
+        name: spring-spe-iiitbcms
+        state: present
+    - name: Enable remote login to mysql
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+        backup: yes
+      notify:
+        - Restart mysql
+  handlers:
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted
+
+- name: Pull docker image of Backend
+  hosts: all
+  tasks:
+    - name: Change the jdbc ip
+      shell: echo $SPRING_DATASOURCE_URL
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:mysql://172.17.0.1:3306/spring-spe-iiitbcms
+    - name: Pull Backend image
+      docker_image:
+        name: akshathkaushal7/spe-project-backend:latest
+        source: pull
