@@ -4,12 +4,12 @@ pipeline {
         maven 'MAVEN'
     }
     environment {
-    	DOCKERHUB_CREDENTIALS=credentials('akshathkaushal_dockerhub_id')
+    	DOCKERHUB_CREDENTIALS=credentials('DockerHubCred')
     }
     stages {
         stage('Download the git repo') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/backend-refactored']], extensions: [], userRemoteConfigs: [[credentialsId: 'Akshath_Github_Private_Repo', url: 'git@github.com:akshathkaushal/IIITB-CMS-Backend.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/backend-refactored']], extensions: [], userRemoteConfigs: [[credentialsId: 'Github Personal Acess Token', url: 'git@github.com:Srinivas-Manda/Management_System_Backend.git']]])
             }
         }
         stage('Maven build and test') {

@@ -25,7 +25,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: akshathkaushal7/spe-project-backend:latest
+          tags: manda123/Management_System_Backend:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
